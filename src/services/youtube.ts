@@ -49,7 +49,7 @@ class YouTubeService {
   private baseURL = 'https://www.googleapis.com/youtube/v3';
 
   constructor() {
-    this.apiKey = 'AIzaSyCc3VMrRTQfhQ3n8Z2xapWI9iDUlBtIuCc';
+    this.apiKey = 'AIzaSyAu4tmh3e2AC8xaYfVAWHHI3Z2eBozb_ho';
     if (!this.apiKey) {
       console.warn('YouTube API key not found.');
     }

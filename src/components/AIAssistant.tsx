@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Bot, Send, Sparkles, Brain, Heart, Utensils, Loader2, ArrowRight, TrendingUp } from 'lucide-react';
-import { openAIService } from '../services/openai';
+import { geminiService } from '../services/openai';
 import { useApp } from '../contexts/AppContext';
 
 interface Message {
@@ -20,7 +20,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     {
       id: '1',
       type: 'ai',
-      content: `Hi ${user?.name || 'there'}! I'm your AI nutrition and mood coach powered by OpenAI. I can help you understand how food affects your emotions, suggest meals based on your mood, and provide personalized insights. What would you like to know?`,
+      content: `Hi ${user?.name || 'there'}! I'm your AI nutrition and mood coach powered by Gemini. I can help you understand how food affects your emotions, suggest meals based on your mood, and provide personalized insights. What would you like to know?`,
       timestamp: new Date()
     }
   ]);
@@ -49,10 +49,10 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     setIsTyping(true);
 
     // Handle special commands
-    const special = await openAIService.handleSpecialCommand(inputMessage, {
+    const special = await geminiService.handleSpecialCommand(inputMessage, {
       moodEntries,
       foodEntries,
-      preferences: openAIService.getUserPreferences(),
+      preferences: geminiService.getUserPreferences(),
     });
     if (special) {
       const aiMessage: Message = {
@@ -67,7 +67,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     }
 
     try {
-      // Convert messages to OpenAI format
+      // Convert messages to Gemini format
       const conversationHistory = messages.slice(-5).map(msg => ({
         role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
         content: msg.content
@@ -79,7 +79,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
         content: inputMessage
       });
 
-      const aiResponse = await openAIService.generateResponse(conversationHistory);
+      const aiResponse = await geminiService.generateResponse(conversationHistory);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
@@ -92,7 +92,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: "I apologize, but I'm having trouble connecting right now. Please check your OpenAI API configuration and try again.",
+        content: "I apologize, but I'm having trouble connecting right now. Please check your Gemini API configuration and try again.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -150,7 +150,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
             <Bot className="w-10 h-10 mr-4 text-purple-600" />
             AI Nutrition Coach
             <span className="ml-3 text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">
-              Powered by OpenAI
+              Powered by Gemini
             </span>
           </h1>
           <p className="text-gray-600 text-lg">Get personalized food and mood insights powered by advanced AI</p>

@@ -1,19 +1,7 @@
-interface OpenAIMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
-
-interface OpenAIResponse {
-  choices: {
-    message: {
-      content: string;
-    };
-  }[];
-}
-
 interface GeminiMessage {
-  role: 'user' | 'model';
-  parts: { text: string }[];
+  role: 'system' | 'user' | 'assistant' | 'model';
+  content?: string;
+  parts?: { text: string }[];
 }
 
 class GeminiService {
@@ -22,7 +10,7 @@ class GeminiService {
   private userPreferences: string[] = [];
 
   constructor() {
-    this.apiKey = 'AIzaSyCdjaNTk8-r89hDp-9GZDxvmf4OUVbZT2I';
+    this.apiKey = 'AIzaSyBgEFr6D59_8uUM8sjvTpVzeF_bysEJwV8';
     if (!this.apiKey) {
       console.warn('Gemini API key not found.');
     }
@@ -186,4 +174,4 @@ class GeminiService {
   }
 }
 
-export const openAIService = new GeminiService();
+export const geminiService = new GeminiService();
