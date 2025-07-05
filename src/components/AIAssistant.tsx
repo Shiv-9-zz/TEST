@@ -48,6 +48,24 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     setInputMessage('');
     setIsTyping(true);
 
+    // Handle special commands
+    const special = await openAIService.handleSpecialCommand(inputMessage, {
+      moodEntries,
+      foodEntries,
+      preferences: openAIService.getUserPreferences(),
+    });
+    if (special) {
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: await special,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setIsTyping(false);
+      return;
+    }
+
     try {
       // Convert messages to OpenAI format
       const conversationHistory = messages.slice(-5).map(msg => ({
@@ -62,14 +80,12 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
       });
 
       const aiResponse = await openAIService.generateResponse(conversationHistory);
-      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
         content: aiResponse,
         timestamp: new Date()
       };
-      
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('AI response error:', error);
@@ -114,6 +130,17 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
         break;
     }
   };
+
+  // Add new suggestions for new features
+  const extendedSuggestions = [
+    ...aiSuggestions,
+    "/recipe tofu, broccoli, vegan",
+    "/summary",
+    "/fact",
+    "/motivate",
+    "/remember I am vegetarian",
+    "/preferences"
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-8">
@@ -274,9 +301,9 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
 
           {/* Quick Suggestions */}
           <div className="px-6 py-4 border-t border-gray-100">
-            <p className="text-sm text-gray-600 mb-3">Quick questions:</p>
+            <p className="text-sm text-gray-600 mb-3">Quick questions & commands:</p>
             <div className="flex flex-wrap gap-2">
-              {aiSuggestions.map((suggestion, index) => (
+              {extendedSuggestions.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}
@@ -291,13 +318,16 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
 
           {/* Input */}
           <div className="p-6 border-t border-gray-100">
+            <div className="mb-2 text-xs text-gray-500">
+              <span className="font-semibold">Try commands:</span> <span className="font-mono">/recipe</span>, <span className="font-mono">/summary</span>, <span className="font-mono">/fact</span>, <span className="font-mono">/motivate</span>, <span className="font-mono">/remember</span>, <span className="font-mono">/preferences</span>
+            </div>
             <div className="flex space-x-4">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Ask me about nutrition, mood, or recipes..."
+                placeholder="Ask me about nutrition, mood, recipes, or use /recipe, /summary, /fact, /motivate..."
                 className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 disabled={isTyping}
               />

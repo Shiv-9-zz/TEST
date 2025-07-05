@@ -136,100 +136,68 @@ export function HomePage({ setActiveTab }: HomePageProps) {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      theme === 'dark' 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50'
-    }`}>
+    <div className="min-h-screen transition-colors duration-300 bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 backdrop-blur-2xl bg-opacity-90 dark:bg-opacity-90">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className={`absolute inset-0 ${
-          theme === 'dark' 
-            ? 'bg-gradient-to-r from-blue-900/20 to-purple-900/20' 
-            : 'bg-gradient-to-r from-orange-600/20 to-red-600/20'
-        }`}></div>
-        <div className="relative px-8 py-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 dark:from-blue-900/20 dark:to-purple-900/20"></div>
+        <div className="relative px-8 py-16">
           <div className="max-w-6xl mx-auto">
             {/* Header with Notifications */}
-            <div className="flex justify-between items-start mb-8">
+            <div className="flex justify-between items-start mb-12">
               <div className="text-center flex-1">
-                <div className={`inline-flex items-center space-x-3 bg-gradient-to-r ${greeting.color} text-white px-6 py-3 rounded-full shadow-lg mb-4`}>
-                  <GreetingIcon className="w-6 h-6" />
-                  <span className="text-lg font-semibold">{greeting.text}, {user?.name || 'User'}!</span>
+                <div className={`inline-flex items-center space-x-3 bg-gradient-to-r ${greeting.color} text-white px-8 py-4 rounded-3xl shadow-2xl mb-6 backdrop-blur-md`}>
+                  <GreetingIcon className="w-8 h-8 drop-shadow-lg" />
+                  <span className="text-2xl font-extrabold tracking-tight drop-shadow-lg">{greeting.text}, {user?.name || 'User'}!</span>
                 </div>
-                <h1 className={`text-5xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                  Welcome to <span className={`text-transparent bg-clip-text ${
-                    theme === 'dark' 
-                      ? 'bg-gradient-to-r from-blue-400 to-purple-600' 
-                      : 'bg-gradient-to-r from-orange-600 to-red-600'
-                  }`}>MoodBites</span>
+                <h1 className="text-6xl font-extrabold mb-6 text-gray-800 dark:text-white drop-shadow-lg">
+                  Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 dark:from-blue-400 dark:to-purple-600">
+                    MoodBites
+                  </span>
                 </h1>
-                <p className={`text-xl max-w-2xl mx-auto mb-6 ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>
+                <p className="text-2xl max-w-2xl mx-auto mb-8 text-gray-600 dark:text-gray-300 font-medium opacity-90">
                   Discover the delicious connection between what you eat and how you feel with AI-powered insights.
                 </p>
-                
                 {/* AI Highlight */}
-                <div className={`rounded-2xl p-6 max-w-2xl mx-auto border ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600' 
-                    : 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-200'
-                }`}>
-                  <div className="flex items-center justify-center space-x-3 mb-3">
-                    <Bot className={`w-6 h-6 ${theme === 'dark' ? 'text-blue-400' : 'text-purple-600'}`} />
-                    <span className={`text-lg font-semibold ${
-                      theme === 'dark' ? 'text-white' : 'text-purple-800'
-                    }`}>AI-Powered Nutrition Coach</span>
-                    <Sparkles className={`w-5 h-5 ${theme === 'dark' ? 'text-blue-400' : 'text-purple-600'}`} />
+                <div className="rounded-3xl p-8 max-w-2xl mx-auto border bg-gradient-to-r from-purple-100 to-pink-100 border-purple-200 dark:from-gray-800 dark:to-gray-700 dark:border-gray-600 shadow-xl backdrop-blur-md">
+                  <div className="flex items-center justify-center space-x-4 mb-4">
+                    <Bot className="w-7 h-7 text-purple-600 dark:text-blue-400 drop-shadow-lg" />
+                    <span className="text-xl font-bold text-purple-800 dark:text-white drop-shadow-lg">
+                      AI-Powered Nutrition Coach
+                    </span>
+                    <Sparkles className="w-6 h-6 text-purple-600 dark:text-blue-400 drop-shadow-lg" />
                   </div>
-                  <p className={theme === 'dark' ? 'text-gray-300' : 'text-purple-700'}>
+                  <p className="text-purple-700 dark:text-gray-300 text-lg font-medium opacity-90">
                     Get personalized meal recommendations, mood analysis, and nutrition insights tailored just for you!
                   </p>
                 </div>
               </div>
-              
               <Notifications />
             </div>
-
             {/* Progress Rings */}
-            <div className={`rounded-2xl p-6 shadow-lg border mb-8 ${
-              theme === 'dark' 
-                ? 'bg-gray-800/90 border-gray-700' 
-                : 'bg-white/80 border-gray-100'
-            } backdrop-blur-sm`}>
-              <h2 className={`text-2xl font-bold mb-6 text-center ${
-                theme === 'dark' ? 'text-white' : 'text-gray-800'
-              }`}>
+            <div className="rounded-3xl p-8 shadow-2xl border mb-12 bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+              <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
                 Today's Progress
               </h2>
               <ProgressRings />
             </div>
-
             {/* Today's Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
               {todayStats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
-                  <div key={index} className={`rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border ${
-                    theme === 'dark' 
-                      ? 'bg-gray-800/90 border-gray-700' 
-                      : 'bg-white/80 border-gray-100'
-                  } backdrop-blur-sm`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`p-3 rounded-xl ${stat.color} text-white`}>
-                        <Icon className="w-6 h-6" />
+                  <div key={index} className="rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md flex flex-col items-center gap-4">
+                    <div className={`p-4 rounded-2xl ${stat.color} shadow-lg`}> {/* stat.color already handles dark/light */}
+                      <Icon className="w-8 h-8" />
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-extrabold text-gray-800 dark:text-white drop-shadow-lg">
+                        {stat.value}
                       </div>
-                      <div className="text-right">
-                        <div className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                          {stat.value}
-                        </div>
-                        <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {stat.label}
-                        </div>
-                        <div className="text-xs text-green-600 font-medium mt-1">
-                          {stat.change}
-                        </div>
+                      <div className="text-lg text-gray-600 dark:text-gray-400 font-semibold opacity-80">
+                        {stat.label}
+                      </div>
+                      <div className="text-sm text-green-600 font-bold mt-1">
+                        {stat.change}
                       </div>
                     </div>
                   </div>
@@ -239,132 +207,87 @@ export function HomePage({ setActiveTab }: HomePageProps) {
           </div>
         </div>
       </div>
-
       {/* Main Content */}
-      <div className="px-8 pb-12">
+      <div className="px-8 pb-16">
         <div className="max-w-6xl mx-auto">
           {/* Achievements */}
-          <div className={`rounded-2xl p-6 shadow-lg border mb-8 ${
-            theme === 'dark' 
-              ? 'bg-gray-800/90 border-gray-700' 
-              : 'bg-white/80 border-gray-100'
-          } backdrop-blur-sm`}>
-            <h2 className={`text-2xl font-bold mb-6 flex items-center ${
-              theme === 'dark' ? 'text-white' : 'text-gray-800'
-            }`}>
-              <Award className="w-6 h-6 mr-3 text-yellow-500" />
+          <div className="rounded-3xl p-8 shadow-2xl border mb-12 bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+            <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
+              <Award className="w-8 h-8 mr-4 text-yellow-500" />
               Recent Achievements
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {achievements.map((achievement, index) => {
                 const Icon = achievement.icon;
                 return (
-                  <div key={index} className={`p-4 rounded-xl border transition-all duration-200 hover:scale-105 ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' 
-                      : 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 hover:from-yellow-100 hover:to-orange-100'
-                  }`}>
-                    <div className="flex items-center space-x-3">
-                      <Icon className={`w-8 h-8 ${achievement.color}`} />
-                      <div>
-                        <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                          {achievement.title}
-                        </h3>
-                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {achievement.description}
-                        </p>
-                      </div>
+                  <div key={index} className="p-6 rounded-2xl border transition-all duration-300 hover:scale-105 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 hover:from-yellow-100 hover:to-orange-100 dark:bg-gray-700/50 dark:border-gray-600 dark:hover:bg-gray-700 shadow-lg backdrop-blur-md flex items-center gap-4">
+                    <Icon className={`w-10 h-10 ${achievement.color} drop-shadow-lg`} />
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-800 dark:text-white drop-shadow-lg">
+                        {achievement.title}
+                      </h3>
+                      <p className="text-base text-gray-600 dark:text-gray-400 font-medium opacity-80">
+                        {achievement.description}
+                      </p>
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
             {/* AI Insights */}
-            <div className={`rounded-2xl p-6 shadow-lg border ${
-              theme === 'dark' 
-                ? 'bg-gray-800/90 border-gray-700' 
-                : 'bg-white/80 border-purple-100'
-            } backdrop-blur-sm`}>
-              <h2 className={`text-2xl font-bold mb-6 flex items-center ${
-                theme === 'dark' ? 'text-white' : 'text-gray-800'
-              }`}>
-                <Bot className={`w-6 h-6 mr-3 ${theme === 'dark' ? 'text-blue-400' : 'text-purple-600'}`} />
+            <div className="rounded-3xl p-8 shadow-2xl border bg-white/80 border-purple-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+              <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
+                <Bot className="w-8 h-8 mr-4 text-purple-600 dark:text-blue-400 drop-shadow-lg" />
                 AI Insights for You
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {aiInsights.map((insight, index) => (
-                  <div key={index} className={`p-4 rounded-xl border ${
-                    theme === 'dark' 
-                      ? 'bg-gradient-to-r from-gray-700 to-gray-600 border-gray-600' 
-                      : 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100'
-                  }`}>
-                    <div className="flex items-start space-x-3">
-                      <Sparkles className={`w-5 h-5 mt-0.5 ${
-                        theme === 'dark' ? 'text-blue-400' : 'text-purple-600'
-                      }`} />
-                      <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{insight}</p>
+                  <div key={index} className="p-6 rounded-2xl border bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100 dark:from-gray-700 dark:to-gray-600 dark:border-gray-600 shadow-md backdrop-blur-md">
+                    <div className="flex items-start space-x-4">
+                      <Sparkles className="w-6 h-6 mt-1 text-purple-600 dark:text-blue-400 drop-shadow-lg" />
+                      <p className="text-lg text-gray-700 dark:text-gray-300 font-medium opacity-90">{insight}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              
-              <div className={`mt-6 p-4 rounded-xl text-white ${
-                theme === 'dark' 
-                  ? 'bg-gradient-to-r from-blue-700 to-purple-700' 
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600'
-              }`}>
-                <h3 className="font-semibold mb-2 flex items-center">
-                  <Bot className="w-5 h-5 mr-2" />
+              <div className="mt-8 p-6 rounded-2xl text-white bg-gradient-to-r from-purple-600 to-pink-600 dark:from-blue-700 dark:to-purple-700 shadow-lg">
+                <h3 className="font-bold mb-2 flex items-center text-lg">
+                  <Bot className="w-6 h-6 mr-2" />
                   Today's AI Recommendation
                 </h3>
-                <p className="text-sm opacity-90">
+                <p className="text-base opacity-90">
                   Based on your mood patterns, try adding omega-3 rich foods like salmon or walnuts to boost your afternoon energy!
                 </p>
               </div>
             </div>
-
             {/* Featured Recipes */}
-            <div className={`rounded-2xl p-6 shadow-lg border ${
-              theme === 'dark' 
-                ? 'bg-gray-800/90 border-gray-700' 
-                : 'bg-white/80 border-gray-100'
-            } backdrop-blur-sm`}>
-              <h2 className={`text-2xl font-bold mb-6 flex items-center ${
-                theme === 'dark' ? 'text-white' : 'text-gray-800'
-              }`}>
-                <Coffee className={`w-6 h-6 mr-3 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}`} />
+            <div className="rounded-3xl p-8 shadow-2xl border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+              <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
+                <Coffee className="w-8 h-8 mr-4 text-orange-600 dark:text-orange-400 drop-shadow-lg" />
                 Recipes for Your Mood
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {featuredRecipes.map((recipe, index) => (
                   <div 
                     key={index} 
-                    className={`flex items-center space-x-4 p-4 rounded-xl transition-colors cursor-pointer group ${
-                      theme === 'dark' 
-                        ? 'hover:bg-gray-700/50' 
-                        : 'hover:bg-orange-50'
-                    }`}
+                    className="flex items-center space-x-6 p-6 rounded-2xl transition-colors cursor-pointer group hover:bg-orange-50 dark:hover:bg-gray-700/50 shadow-md backdrop-blur-md"
                     onClick={() => setActiveTab('recipes')}
                   >
                     <img 
                       src={recipe.image} 
                       alt={recipe.name}
-                      className="w-16 h-16 rounded-xl object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-20 h-20 rounded-2xl object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg"
                     />
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="font-bold text-xl text-gray-800 dark:text-white drop-shadow-lg">
                           {recipe.name}
                         </h3>
-                        <span className="text-xl">{recipe.mood}</span>
+                        <span className="text-2xl">{recipe.mood}</span>
                       </div>
-                      <div className={`flex items-center space-x-4 text-sm ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
+                      <div className="flex items-center space-x-6 text-lg text-gray-600 dark:text-gray-400 font-medium opacity-80">
                         <span>⏱️ {recipe.time}</span>
                         <span>🔥 {recipe.calories} cal</span>
                       </div>
@@ -374,59 +297,49 @@ export function HomePage({ setActiveTab }: HomePageProps) {
               </div>
             </div>
           </div>
-
           {/* Featured Cooking Videos */}
-          <div className={`rounded-2xl p-6 shadow-lg mb-8 border ${
-            theme === 'dark' 
-              ? 'bg-gray-800/90 border-gray-700' 
-              : 'bg-white/80 border-gray-100'
-          } backdrop-blur-sm`}>
-            <h2 className={`text-2xl font-bold mb-6 flex items-center ${
-              theme === 'dark' ? 'text-white' : 'text-gray-800'
-            }`}>
-              <Play className="w-6 h-6 mr-3 text-red-600" />
+          <div className="rounded-3xl p-8 shadow-2xl mb-12 border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+            <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
+              <Play className="w-8 h-8 mr-4 text-red-600 drop-shadow-lg" />
               Featured Cooking Videos
-              <span className="ml-3 text-sm bg-red-100 text-red-700 px-3 py-1 rounded-full">
+              <span className="ml-4 text-base bg-red-100 text-red-700 px-4 py-2 rounded-full shadow-sm">
                 YouTube
               </span>
             </h2>
-            
             {isLoadingVideos ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-                <span className={`ml-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600"></div>
+                <span className="ml-4 text-lg text-gray-600 dark:text-gray-400 font-medium opacity-80">
                   Loading videos...
                 </span>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {featuredVideos.map((video, index) => (
                   <div 
                     key={index} 
-                    className="group cursor-pointer"
+                    className="group cursor-pointer rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-md"
                     onClick={() => openVideo(video)}
                   >
-                    <div className="relative overflow-hidden rounded-xl mb-3">
+                    <div className="relative overflow-hidden rounded-2xl mb-4">
                       <img 
                         src={video.thumbnail} 
                         alt={video.title}
-                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 shadow-md"
                       />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                        <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Play className="w-6 h-6 text-white ml-1" />
+                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                          <Play className="w-8 h-8 text-white ml-1" />
                         </div>
                       </div>
-                      <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
+                      <div className="absolute bottom-3 right-3 bg-black/80 text-white px-3 py-2 rounded text-base shadow-md">
                         {video.duration}
                       </div>
                     </div>
-                    <h3 className={`font-semibold line-clamp-2 mb-1 group-hover:text-red-600 transition-colors ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-800'
-                    }`}>
+                    <h3 className="font-bold line-clamp-2 mb-2 group-hover:text-red-600 transition-colors text-lg text-gray-800 dark:text-white drop-shadow-lg">
                       {video.title}
                     </h3>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className="text-base text-gray-600 dark:text-gray-400 font-medium opacity-80">
                       {video.channelTitle}
                     </p>
                   </div>
@@ -434,40 +347,29 @@ export function HomePage({ setActiveTab }: HomePageProps) {
               </div>
             )}
           </div>
-
           {/* Mood-Food Patterns */}
-          <div className={`rounded-2xl p-6 shadow-lg mb-8 border ${
-            theme === 'dark' 
-              ? 'bg-gray-800/90 border-gray-700' 
-              : 'bg-white/80 border-gray-100'
-          } backdrop-blur-sm`}>
-            <h2 className={`text-2xl font-bold mb-6 flex items-center ${
-              theme === 'dark' ? 'text-white' : 'text-gray-800'
-            }`}>
-              <TrendingUp className={`w-6 h-6 mr-3 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}`} />
+          <div className="rounded-3xl p-8 shadow-2xl mb-12 border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+            <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
+              <TrendingUp className="w-8 h-8 mr-4 text-orange-600 dark:text-orange-400 drop-shadow-lg" />
               Your Mood-Food Patterns
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {moodInsights.map((insight, index) => (
-                <div key={index} className={`flex items-center justify-between p-4 rounded-xl ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-gray-700 to-gray-600' 
-                    : 'bg-gradient-to-r from-orange-50 to-yellow-50'
-                }`}>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-3xl">{insight.mood}</div>
+                <div key={index} className="flex items-center justify-between p-6 rounded-2xl bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-gray-700 dark:to-gray-600 shadow-md backdrop-blur-md">
+                  <div className="flex items-center space-x-6">
+                    <div className="text-4xl">{insight.mood}</div>
                     <div>
-                      <div className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+                      <div className="font-bold text-lg text-gray-800 dark:text-white drop-shadow-lg">
                         {insight.food}
                       </div>
-                      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <div className="text-base text-gray-600 dark:text-gray-400 font-medium opacity-80">
                         Best mood booster
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600">{insight.correlation}</div>
-                    <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                    <div className="text-2xl font-extrabold text-green-600 drop-shadow-lg">{insight.correlation}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-500 font-medium opacity-80">
                       correlation
                     </div>
                   </div>
@@ -475,70 +377,48 @@ export function HomePage({ setActiveTab }: HomePageProps) {
               ))}
             </div>
           </div>
-
           {/* Quick Actions */}
-          <div className={`rounded-2xl p-6 shadow-lg border ${
-            theme === 'dark' 
-              ? 'bg-gray-800/90 border-gray-700' 
-              : 'bg-white/80 border-gray-100'
-          } backdrop-blur-sm`}>
-            <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+          <div className="rounded-3xl p-8 shadow-2xl border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+            <h2 className="text-3xl font-extrabold mb-8 text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
               Quick Actions
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <button 
                 onClick={() => setActiveTab('ai')}
-                className={`p-6 rounded-xl text-white hover:shadow-lg transition-all duration-300 hover:scale-105 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-purple-700 to-pink-700' 
-                    : 'bg-gradient-to-r from-purple-500 to-pink-500'
-                }`}
+                className="p-8 rounded-2xl text-white hover:shadow-2xl transition-all duration-300 hover:scale-110 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-700 dark:to-pink-700 shadow-lg text-xl font-bold flex flex-col items-center gap-2"
               >
-                <div className="text-3xl mb-2">🤖</div>
-                <div className="font-semibold">Ask AI Coach</div>
-                <div className="text-sm opacity-90">Get personalized advice</div>
+                <div className="text-4xl mb-2">🤖</div>
+                <div>Ask AI Coach</div>
+                <div className="text-base opacity-90 font-medium">Get personalized advice</div>
               </button>
               <button 
                 onClick={() => setActiveTab('food')}
-                className={`p-6 rounded-xl text-white hover:shadow-lg transition-all duration-300 hover:scale-105 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-green-700 to-emerald-700' 
-                    : 'bg-gradient-to-r from-green-500 to-emerald-500'
-                }`}
+                className="p-8 rounded-2xl text-white hover:shadow-2xl transition-all duration-300 hover:scale-110 bg-gradient-to-r from-green-500 to-emerald-500 dark:from-green-700 dark:to-emerald-700 shadow-lg text-xl font-bold flex flex-col items-center gap-2"
               >
-                <div className="text-3xl mb-2">🍽️</div>
-                <div className="font-semibold">Log a Meal</div>
-                <div className="text-sm opacity-90">Track what you're eating</div>
+                <div className="text-4xl mb-2">🍽️</div>
+                <div>Log a Meal</div>
+                <div className="text-base opacity-90 font-medium">Track what you're eating</div>
               </button>
               <button 
                 onClick={() => setActiveTab('mood')}
-                className={`p-6 rounded-xl text-white hover:shadow-lg transition-all duration-300 hover:scale-105 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-blue-700 to-purple-700' 
-                    : 'bg-gradient-to-r from-blue-500 to-purple-500'
-                }`}
+                className="p-8 rounded-2xl text-white hover:shadow-2xl transition-all duration-300 hover:scale-110 bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-700 dark:to-purple-700 shadow-lg text-xl font-bold flex flex-col items-center gap-2"
               >
-                <div className="text-3xl mb-2">😊</div>
-                <div className="font-semibold">Check Your Mood</div>
-                <div className="text-sm opacity-90">How are you feeling?</div>
+                <div className="text-4xl mb-2">😊</div>
+                <div>Check Your Mood</div>
+                <div className="text-base opacity-90 font-medium">How are you feeling?</div>
               </button>
               <button 
                 onClick={() => setActiveTab('recipes')}
-                className={`p-6 rounded-xl text-white hover:shadow-lg transition-all duration-300 hover:scale-105 ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-red-700 to-pink-700' 
-                    : 'bg-gradient-to-r from-red-500 to-pink-500'
-                }`}
+                className="p-8 rounded-2xl text-white hover:shadow-2xl transition-all duration-300 hover:scale-110 bg-gradient-to-r from-red-500 to-pink-500 dark:from-red-700 dark:to-pink-700 shadow-lg text-xl font-bold flex flex-col items-center gap-2"
               >
-                <div className="text-3xl mb-2">📺</div>
-                <div className="font-semibold">Watch Recipes</div>
-                <div className="text-sm opacity-90">Learn from cooking videos</div>
+                <div className="text-4xl mb-2">📺</div>
+                <div>Watch Recipes</div>
+                <div className="text-base opacity-90 font-medium">Learn from cooking videos</div>
               </button>
             </div>
           </div>
         </div>
       </div>
-
       {/* Floating Quick Actions */}
       <QuickActions onAction={handleQuickAction} />
     </div>

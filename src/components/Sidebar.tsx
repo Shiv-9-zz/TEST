@@ -128,92 +128,71 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   };
 
   return (
-    <div className={`w-80 min-h-screen shadow-2xl transition-colors duration-300 ${
-      theme === 'dark' 
-        ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-b from-amber-900 via-orange-800 to-red-900'
-    }`}>
+    <div className="w-80 min-h-screen shadow-2xl transition-colors duration-300 bg-gradient-to-b from-amber-900 via-orange-800 to-red-900 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 backdrop-blur-xl bg-opacity-80 dark:bg-opacity-80">
       {/* Header */}
-      <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-orange-700/30'}`}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${
-              theme === 'dark' 
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600' 
-                : 'bg-gradient-to-r from-yellow-400 to-orange-500'
-            }`}>
-              <UtensilsCrossed className="w-7 h-7 text-white" />
+      <div className="p-8 border-b border-orange-700/30 dark:border-gray-700 flex flex-col gap-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center space-x-4">
+            <div className="w-14 h-14 rounded-3xl flex items-center justify-center shadow-xl bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-blue-500 dark:to-purple-600">
+              <UtensilsCrossed className="w-8 h-8 text-white drop-shadow-lg" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
                 MoodBites
               </h1>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-orange-200'}`}>
+              <p className="text-base text-orange-200 dark:text-gray-300 font-medium opacity-80">
                 AI-Powered Nutrition
               </p>
             </div>
           </div>
-          
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className={`p-2 rounded-xl transition-all duration-200 hover:scale-110 ${
-              theme === 'dark' 
-                ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' 
-                : 'bg-orange-700/50 hover:bg-orange-600/50 text-orange-200'
-            }`}
+            className="p-3 rounded-2xl transition-all duration-300 hover:scale-110 bg-orange-700/50 hover:bg-orange-600/50 text-orange-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-yellow-400 shadow-md backdrop-blur-md"
+            aria-label="Toggle theme"
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {theme === 'dark' ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
           </button>
         </div>
-
         {/* User Info */}
         {user && (
           <div 
-            className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-colors ${
-              theme === 'dark' 
-                ? 'bg-gray-700/50 hover:bg-gray-700' 
-                : 'bg-orange-700/30 hover:bg-orange-700/50'
-            }`}
+            className="flex items-center space-x-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 bg-orange-700/30 hover:bg-orange-700/50 dark:bg-gray-700/50 dark:hover:bg-gray-700 shadow-lg backdrop-blur-md group"
             onClick={() => setActiveTab('profile')}
           >
             <img 
               src={user.avatar} 
               alt={user.name}
-              className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
+              className="w-12 h-12 rounded-full object-cover border-2 border-white/30 group-hover:scale-105 transition-transform duration-300 shadow-md"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{user.name}</p>
-              <p className={`text-sm truncate ${theme === 'dark' ? 'text-gray-300' : 'text-orange-200'}`}>
+              <p className="text-white font-semibold truncate text-lg">{user.name}</p>
+              <p className="text-sm truncate text-orange-200 dark:text-gray-300 opacity-80">
                 {user.stats.streakDays} day streak
               </p>
             </div>
           </div>
         )}
       </div>
-      
       {/* Navigation */}
-      <nav className="p-4 space-y-2">
+      <nav className="p-6 space-y-3">
+        <h2 className="text-lg font-bold text-orange-100 dark:text-gray-200 mb-2 tracking-wide uppercase opacity-80">Menu</h2>
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
-          
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? theme === 'dark'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
-                    : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg transform scale-105'
-                  : theme === 'dark'
-                    ? 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-                    : 'text-orange-100 hover:bg-orange-800/50 hover:text-white'
-              }`}
+              className={
+                `w-full flex items-center space-x-4 px-5 py-3 rounded-2xl transition-all duration-300
+                text-lg font-medium shadow-sm
+                ${isActive ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg scale-105 dark:from-blue-600 dark:to-purple-600' : 'text-orange-100 hover:bg-orange-800/60 hover:text-white dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white opacity-90'}
+                hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-blue-500`
+              }
             >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <Icon className="w-6 h-6" />
+              <span className="font-semibold">{item.label}</span>
               {item.id === 'ai' && (
                 <div className="ml-auto w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               )}
@@ -221,144 +200,106 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           );
         })}
       </nav>
-
       {/* Quick Mood Selector */}
-      <div className={`p-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-orange-700/30'}`}>
-        <h3 className={`text-sm font-semibold mb-3 flex items-center ${
-          theme === 'dark' ? 'text-gray-300' : 'text-orange-200'
-        }`}>
-          <Heart className="w-4 h-4 mr-2" />
+      <div className="p-6 border-t border-orange-700/30 dark:border-gray-700">
+        <h3 className="text-base font-bold mb-4 flex items-center text-orange-200 dark:text-gray-300 tracking-wide uppercase opacity-80">
+          <Heart className="w-5 h-5 mr-2" />
           Quick Mood & Music
         </h3>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-3">
           {moodOptions.map((mood, index) => (
             <button
               key={index}
               onClick={() => handleMoodClick(mood.mood)}
-              className={`p-2 rounded-lg hover:scale-105 transition-transform duration-200 text-center ${
-                mood.color
-              } ${selectedMoodForMusic === mood.mood ? 'ring-2 ring-blue-400' : ''}`}
+              className={`p-3 rounded-xl hover:scale-110 transition-transform duration-300 text-center shadow-md backdrop-blur-md ${selectedMoodForMusic === mood.mood ? 'ring-2 ring-blue-400' : ''} ${theme === 'dark' ? mood.color.replace(/bg-\w+-100/g, 'bg-yellow-900').replace(/text-\w+-700/g, 'text-yellow-300') : mood.color}`}
             >
-              <div className="text-lg mb-1">{mood.emoji}</div>
-              <div className="text-xs font-medium">{mood.label}</div>
+              <div className="text-2xl mb-1 drop-shadow-lg">{mood.emoji}</div>
+              <div className="text-xs font-semibold opacity-90">{mood.label}</div>
             </button>
           ))}
         </div>
       </div>
-
       {/* Spotify Music Player */}
-      <div className={`p-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-orange-700/30'}`}>
-        <h3 className={`text-sm font-semibold mb-3 flex items-center ${
-          theme === 'dark' ? 'text-gray-300' : 'text-orange-200'
-        }`}>
-          <Music className="w-4 h-4 mr-2" />
+      <div className="p-6 border-t border-orange-700/30 dark:border-gray-700">
+        <h3 className="text-base font-bold mb-4 flex items-center text-orange-200 dark:text-gray-300 tracking-wide uppercase opacity-80">
+          <Music className="w-5 h-5 mr-2" />
           Spotify Music Player
-          <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+          <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full shadow-sm">
             Live
           </span>
         </h3>
-        
         {/* Current Playing Track */}
         {musicRecommendations.length > 0 && (
-          <div className={`p-3 rounded-lg mb-3 ${
-            theme === 'dark' 
-              ? 'bg-gray-700/50 border border-gray-600' 
-              : 'bg-orange-700/50 border border-orange-500/50'
-          }`}>
+          <div className="p-4 rounded-2xl mb-4 bg-orange-700/50 border border-orange-500/50 dark:bg-gray-700/50 dark:border-gray-600 shadow-lg backdrop-blur-md">
             <div className="flex items-center justify-between mb-2">
               <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-medium truncate">
+                <p className="text-white text-base font-semibold truncate">
                   {musicRecommendations[currentSong]?.name || 'No track selected'}
                 </p>
-                <p className={`text-xs truncate ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-orange-300'
-                }`}>
+                <p className="text-xs truncate text-orange-300 dark:text-gray-400 opacity-80">
                   {musicRecommendations[currentSong]?.artists.map(artist => artist.name).join(', ') || ''}
                 </p>
               </div>
               <button
                 onClick={() => openSpotifyTrack(musicRecommendations[currentSong])}
-                className={`ml-2 transition-colors ${
-                  theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                }`}
+                className="ml-2 transition-colors text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white"
                 title="Open in Spotify"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-5 h-5" />
               </button>
             </div>
-            
             {/* Player Controls */}
-            <div className="flex items-center justify-center space-x-3 mb-2">
+            <div className="flex items-center justify-center space-x-4 mb-2">
               <button
                 onClick={() => setIsShuffled(!isShuffled)}
-                className={`transition-colors ${
-                  isShuffled 
-                    ? 'text-green-400' 
-                    : theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                }`}
+                className={`transition-colors ${isShuffled ? 'text-green-400' : 'text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white'} text-lg`}
+                aria-label="Shuffle"
               >
-                <Shuffle className="w-4 h-4" />
+                <Shuffle className="w-5 h-5" />
               </button>
               <button
                 onClick={handlePrevious}
-                className={`transition-colors ${
-                  theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                }`}
+                className="transition-colors text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white text-lg"
+                aria-label="Previous"
               >
-                <SkipBack className="w-4 h-4" />
+                <SkipBack className="w-5 h-5" />
               </button>
               <button
                 onClick={() => handlePlayPause(currentSong)}
-                className={`p-2 rounded-full transition-colors ${
-                  theme === 'dark' 
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                    : 'bg-orange-600 hover:bg-orange-700 text-white'
-                }`}
+                className="p-3 rounded-full transition-colors bg-orange-600 hover:bg-orange-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 shadow-md"
+                aria-label="Play/Pause"
               >
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
               <button
                 onClick={handleNext}
-                className={`transition-colors ${
-                  theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                }`}
+                className="transition-colors text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white text-lg"
+                aria-label="Next"
               >
-                <SkipForward className="w-4 h-4" />
+                <SkipForward className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setIsRepeating(!isRepeating)}
-                className={`transition-colors ${
-                  isRepeating 
-                    ? 'text-green-400' 
-                    : theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                }`}
+                className={`transition-colors ${isRepeating ? 'text-green-400' : 'text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white'} text-lg`}
+                aria-label="Repeat"
               >
-                <Repeat className="w-4 h-4" />
+                <Repeat className="w-5 h-5" />
               </button>
             </div>
-            
             {/* Progress Bar */}
-            <div className={`w-full rounded-full h-1 mb-2 ${
-              theme === 'dark' ? 'bg-gray-600' : 'bg-orange-800/50'
-            }`}>
-              <div className={`h-1 rounded-full w-1/3 ${
-                theme === 'dark' 
-                  ? 'bg-gradient-to-r from-blue-400 to-purple-500' 
-                  : 'bg-gradient-to-r from-yellow-400 to-orange-500'
-              }`}></div>
+            <div className="w-full rounded-full h-2 mb-2 bg-orange-800/50 dark:bg-gray-600">
+              <div className="h-2 rounded-full w-1/3 bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-blue-400 dark:to-purple-500 shadow-md"></div>
             </div>
-            
             <div className="flex justify-between text-xs text-gray-400">
               <span>1:23</span>
               <span>{musicRecommendations[currentSong] ? spotifyService.formatDuration(musicRecommendations[currentSong].duration_ms) : '0:00'}</span>
             </div>
           </div>
         )}
-        
         {isLoadingMusic ? (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className={`w-6 h-6 animate-spin ${theme === 'dark' ? 'text-gray-400' : 'text-orange-300'}`} />
-            <span className={`ml-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-orange-300'}`}>
+            <Loader2 className="w-6 h-6 animate-spin text-orange-300 dark:text-gray-400" />
+            <span className="ml-2 text-sm text-orange-300 dark:text-gray-400">
               Loading music...
             </span>
           </div>
@@ -367,28 +308,18 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             {musicRecommendations.map((track, index) => (
               <div
                 key={track.id}
-                className={`p-3 rounded-lg transition-all duration-200 cursor-pointer group ${
-                  currentSong === index
-                    ? theme === 'dark'
-                      ? 'bg-gray-700/70 border border-gray-600'
-                      : 'bg-orange-700/70 border border-orange-500/50'
-                    : theme === 'dark'
-                      ? 'bg-gray-800/30 hover:bg-gray-700/40'
-                      : 'bg-orange-800/30 hover:bg-orange-700/40'
-                }`}
+                className={`p-3 rounded-xl transition-all duration-300 cursor-pointer group ${currentSong === index ? 'bg-orange-700/70 border border-orange-500/50 dark:bg-gray-700/70 dark:border-gray-600 scale-105 shadow-lg' : 'bg-orange-800/30 hover:bg-orange-700/40 dark:bg-gray-800/30 dark:hover:bg-gray-700/40 opacity-90'} backdrop-blur-md`}
                 onClick={() => setCurrentSong(index)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium truncate">{track.name}</p>
-                    <p className={`text-xs truncate ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-orange-300'
-                    }`}>
+                    <p className="text-white text-sm font-semibold truncate">{track.name}</p>
+                    <p className="text-xs truncate text-orange-300 dark:text-gray-400 opacity-80">
                       {track.artists.map(artist => artist.name).join(', ')}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2 ml-2">
-                    <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-orange-300'}`}>
+                    <span className="text-xs text-orange-300 dark:text-gray-400">
                       {spotifyService.formatDuration(track.duration_ms)}
                     </span>
                     <button
@@ -396,14 +327,13 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
                         e.stopPropagation();
                         handlePlayPause(index);
                       }}
-                      className={`transition-colors ${
-                        theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                      }`}
+                      className="transition-colors text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white"
+                      aria-label="Play/Pause"
                     >
                       {isPlaying && currentSong === index ? (
-                        <Pause className="w-4 h-4" />
+                        <Pause className="w-5 h-5" />
                       ) : (
-                        <Play className="w-4 h-4" />
+                        <Play className="w-5 h-5" />
                       )}
                     </button>
                     <button
@@ -411,12 +341,11 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
                         e.stopPropagation();
                         openSpotifyTrack(track);
                       }}
-                      className={`transition-colors opacity-0 group-hover:opacity-100 ${
-                        theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-orange-300 hover:text-white'
-                      }`}
+                      className="transition-colors opacity-0 group-hover:opacity-100 text-orange-300 hover:text-white dark:text-gray-400 dark:hover:text-white"
                       title="Open in Spotify"
+                      aria-label="Open in Spotify"
                     >
-                      <ExternalLink className="w-3 h-3" />
+                      <ExternalLink className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -424,30 +353,20 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             ))}
           </div>
         )}
-        
         {/* Volume Control */}
-        <div className="mt-4 flex items-center space-x-2">
-          <Volume2 className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-orange-300'}`} />
-          <div className={`flex-1 rounded-full h-2 ${
-            theme === 'dark' ? 'bg-gray-700' : 'bg-orange-800/50'
-          }`}>
+        <div className="mt-4 flex items-center space-x-3">
+          <Volume2 className="w-5 h-5 text-orange-300 dark:text-gray-400" />
+          <div className="flex-1 rounded-full h-3 bg-orange-800/50 dark:bg-gray-700 shadow-inner">
             <div 
-              className={`h-2 rounded-full ${
-                theme === 'dark' 
-                  ? 'bg-gradient-to-r from-blue-400 to-purple-500' 
-                  : 'bg-gradient-to-r from-yellow-400 to-orange-500'
-              }`}
+              className="h-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-blue-400 dark:to-purple-500 shadow-md"
               style={{ width: `${volume}%` }}
             ></div>
           </div>
-          <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-orange-300'}`}>
+          <span className="text-xs text-orange-300 dark:text-gray-400 font-semibold">
             {volume}%
           </span>
         </div>
-        
-        <div className={`mt-2 text-xs text-center ${
-          theme === 'dark' ? 'text-gray-500' : 'text-orange-300'
-        }`}>
+        <div className="mt-3 text-xs text-center text-orange-300 dark:text-gray-500 opacity-80">
           Powered by Spotify API • {musicRecommendations.length} tracks loaded
         </div>
       </div>

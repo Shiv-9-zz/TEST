@@ -9,6 +9,7 @@ interface SocialProps {
 export function Social({ setActiveTab }: SocialProps) {
   const { user, addFoodEntry } = useApp();
   const [newPost, setNewPost] = useState('');
+  const [speakingPostId, setSpeakingPostId] = useState<number | null>(null);
 
   const posts = [
     {
@@ -90,6 +91,19 @@ export function Social({ setActiveTab }: SocialProps) {
     });
     
     alert(`${foodName} added to your food log! 🍽️`);
+  };
+
+  const handleSpeak = (postId: number, text: string) => {
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setSpeakingPostId(null);
+      return;
+    }
+    const utter = new window.SpeechSynthesisUtterance(text);
+    utter.onend = () => setSpeakingPostId(null);
+    utter.onerror = () => setSpeakingPostId(null);
+    setSpeakingPostId(postId);
+    window.speechSynthesis.speak(utter);
   };
 
   return (
@@ -191,8 +205,22 @@ export function Social({ setActiveTab }: SocialProps) {
             </div>
 
             {/* Post Content */}
-            <div className="px-6 pb-4">
-              <p className="text-gray-800">{post.content}</p>
+            <div className="px-6 pb-4 flex items-center gap-2">
+              <p className="text-gray-800 flex-1">{post.content}</p>
+              <button
+                onClick={() => handleSpeak(post.id, post.content)}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 flex items-center space-x-1 ${speakingPostId === post.id ? 'opacity-60 cursor-not-allowed' : ''}`}
+                disabled={speakingPostId === post.id}
+                aria-label={speakingPostId === post.id ? 'Stop' : 'Listen'}
+                title={speakingPostId === post.id ? 'Stop' : 'Listen'}
+              >
+                {speakingPostId === post.id ? (
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                ) : (
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                )}
+                <span>{speakingPostId === post.id ? 'Stop' : 'Listen'}</span>
+              </button>
             </div>
 
             {/* Post Image */}

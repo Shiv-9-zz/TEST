@@ -14,6 +14,7 @@ interface OpenAIResponse {
 class OpenAIService {
   private apiKey: string;
   private baseURL = 'https://api.openai.com/v1';
+  private userPreferences: string[] = [];
 
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENAI_API_KEY || '';
@@ -112,6 +113,74 @@ class OpenAIService {
     }
     
     return "I understand you're looking for nutrition and mood guidance. I can help with:\n\n🍽️ **Food recommendations** based on your mood\n📈 **Mood pattern analysis** from your data\n🥗 **Personalized recipes** for your goals\n🧠 **Nutritional insights** for mental wellness\n\nWhat specific area would you like to explore?";
+  }
+
+  setUserPreferences(preferences: string[]) {
+    this.userPreferences = preferences;
+  }
+
+  getUserPreferences(): string[] {
+    return this.userPreferences;
+  }
+
+  async generateRecipe(ingredients: string[], dietary?: string): Promise<string> {
+    const prompt = `Generate a creative, healthy recipe using these ingredients: ${ingredients.join(', ')}.
+    ${dietary ? `Dietary restrictions: ${dietary}` : ''}
+    Respond with a recipe name, ingredients, and step-by-step instructions.`;
+    return this.generateResponse([{ role: 'user', content: prompt }]);
+  }
+
+  async generateSummary(moodEntries: any[], foodEntries: any[]): Promise<string> {
+    const moodSummary = moodEntries.length > 0 ? `Mood entries: ${moodEntries.map(e => e.mood).join(', ')}` : 'No mood entries.';
+    const foodSummary = foodEntries.length > 0 ? `Foods: ${foodEntries.map(e => e.name).join(', ')}` : 'No food entries.';
+    const prompt = `Summarize my week:
+    ${moodSummary}
+    ${foodSummary}
+    Give me a positive, actionable summary of my nutrition and mood trends.`;
+    return this.generateResponse([{ role: 'user', content: prompt }]);
+  }
+
+  async getDailyFact(): Promise<string> {
+    const prompt = 'Give me a fun, science-based nutrition fact. Keep it short and engaging.';
+    return this.generateResponse([{ role: 'user', content: prompt }]);
+  }
+
+  async getMotivation(): Promise<string> {
+    const prompt = 'Share a motivational quote or tip for healthy eating and mood.';
+    return this.generateResponse([{ role: 'user', content: prompt }]);
+  }
+
+  async handleSpecialCommand(message: string, context: { moodEntries?: any[], foodEntries?: any[], preferences?: string[] }): Promise<string | null> {
+    const lower = message.toLowerCase();
+    if (lower.startsWith('/recipe')) {
+      // /recipe tofu, broccoli, vegan
+      const parts = message.split(' ');
+      const ingredients = parts.slice(1).join(' ').split(',').map(s => s.trim()).filter(Boolean);
+      const dietary = ingredients.find(i => ['vegan', 'vegetarian', 'gluten-free', 'keto', 'paleo'].includes(i));
+      return this.generateRecipe(ingredients.filter(i => i !== dietary), dietary);
+    }
+    if (lower.startsWith('/summary')) {
+      return this.generateSummary(context.moodEntries || [], context.foodEntries || []);
+    }
+    if (lower.startsWith('/fact')) {
+      return this.getDailyFact();
+    }
+    if (lower.startsWith('/motivate')) {
+      return this.getMotivation();
+    }
+    if (lower.startsWith('/remember')) {
+      // /remember I am vegetarian
+      const pref = message.replace('/remember', '').trim();
+      if (pref) {
+        this.userPreferences.push(pref);
+        return Promise.resolve(`Got it! I'll remember: ${pref}`);
+      }
+      return Promise.resolve('Please specify what you want me to remember.');
+    }
+    if (lower.startsWith('/preferences')) {
+      return Promise.resolve(`Your preferences: ${this.userPreferences.join(', ') || 'None saved.'}`);
+    }
+    return null;
   }
 }
 
