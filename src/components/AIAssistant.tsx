@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Bot, Send, Sparkles, Brain, Heart, Utensils, Loader2, ArrowRight, TrendingUp } from 'lucide-react';
 import { geminiService } from '../services/openai';
 import { useApp } from '../contexts/AppContext';
@@ -26,6 +26,15 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [lastWasFallback, setLastWasFallback] = useState(false);
+
+  // Auto-scroll to latest message
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping]);
 
   const aiSuggestions = [
     "What should I eat to boost my energy?",
@@ -47,6 +56,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
+    setLastWasFallback(false);
 
     // Handle special commands
     const special = await geminiService.handleSpecialCommand(inputMessage, {
@@ -55,10 +65,13 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
       preferences: geminiService.getUserPreferences(),
     });
     if (special) {
+      const aiContent = await special;
+      const isFallback = aiContent.includes('I understand you') || aiContent.includes('I apologize') || aiContent.includes('nutrition and mood guidance');
+      setLastWasFallback(isFallback);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: await special,
+        content: aiContent,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiMessage]);
@@ -80,6 +93,8 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
       });
 
       const aiResponse = await geminiService.generateResponse(conversationHistory);
+      const isFallback = aiResponse.includes('I understand you') || aiResponse.includes('I apologize') || aiResponse.includes('nutrition and mood guidance');
+      setLastWasFallback(isFallback);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
@@ -88,6 +103,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
       };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
+      setLastWasFallback(true);
       console.error('AI response error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -141,6 +157,31 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     "/remember I am vegetarian",
     "/preferences"
   ];
+
+  // Keyboard accessibility for quick suggestions
+  const suggestionButtonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const handleSuggestionKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    if (e.key === 'ArrowRight') {
+      suggestionButtonsRef.current[idx + 1]?.focus();
+    } else if (e.key === 'ArrowLeft') {
+      suggestionButtonsRef.current[idx - 1]?.focus();
+    } else if (e.key === 'Enter') {
+      handleSuggestionClick(extendedSuggestions[idx]);
+    }
+  };
+
+  const handleClearChat = () => {
+    setMessages([
+      {
+        id: '1',
+        type: 'ai',
+        content: `Hi ${user?.name || 'there'}! I'm your AI nutrition and mood coach powered by Gemini. I can help you understand how food affects your emotions, suggest meals based on your mood, and provide personalized insights. What would you like to know?`,
+        timestamp: new Date()
+      }
+    ]);
+    setInputMessage('');
+    setLastWasFallback(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-8">
@@ -257,6 +298,13 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
 
           {/* Messages */}
           <div className="h-96 overflow-y-auto p-6 space-y-4">
+            {lastWasFallback && (
+              <div className="flex justify-center mb-2">
+                <span className="px-3 py-1 bg-yellow-200 text-yellow-900 rounded-full text-xs font-semibold flex items-center gap-2">
+                  ⚠️ Gemini fallback or error response
+                </span>
+              </div>
+            )}
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -285,18 +333,13 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl">
-                  <div className="flex items-center space-x-2">
-                    <Bot className="w-4 h-4 text-purple-600" />
-                    <span className="text-xs font-medium text-purple-600">AI Assistant</span>
-                  </div>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                    <span className="text-sm">AI is analyzing and generating response...</span>
-                  </div>
+                <div className="bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                  <span className="text-sm">AI is analyzing and generating response...</span>
                 </div>
               </div>
             )}
+            <div ref={chatEndRef} />
           </div>
 
           {/* Quick Suggestions */}
@@ -306,7 +349,9 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
               {extendedSuggestions.map((suggestion, index) => (
                 <button
                   key={index}
+                  ref={el => suggestionButtonsRef.current[index] = el}
                   onClick={() => handleSuggestionClick(suggestion)}
+                  onKeyDown={e => handleSuggestionKeyDown(e, index)}
                   className="px-3 py-2 bg-purple-100 text-purple-700 rounded-full text-sm hover:bg-purple-200 transition-colors"
                   disabled={isTyping}
                 >
@@ -317,7 +362,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
           </div>
 
           {/* Input */}
-          <div className="p-6 border-t border-gray-100">
+          <div className="p-6 border-t border-gray-100 flex flex-col gap-2">
             <div className="mb-2 text-xs text-gray-500">
               <span className="font-semibold">Try commands:</span> <span className="font-mono">/recipe</span>, <span className="font-mono">/summary</span>, <span className="font-mono">/fact</span>, <span className="font-mono">/motivate</span>, <span className="font-mono">/remember</span>, <span className="font-mono">/preferences</span>
             </div>
@@ -341,6 +386,14 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
                 ) : (
                   <Send className="w-5 h-5" />
                 )}
+              </button>
+              <button
+                onClick={handleClearChat}
+                className="px-4 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-semibold"
+                disabled={isTyping}
+                title="Clear chat"
+              >
+                Clear
               </button>
             </div>
           </div>
