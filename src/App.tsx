@@ -13,7 +13,9 @@ import { OpeningAnimation } from './components/OpeningAnimation';
 import { SignupPage } from './components/SignupPage';
 import { GuidedTour } from './components/GuidedTour';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { AppProvider } from './contexts/AppContext';
+import { AppProvider, useApp } from './contexts/AppContext';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import './TabTransition.css';
 
 type ActiveTab = 'home' | 'ai' | 'mood' | 'food' | 'analytics' | 'recipes' | 'social' | 'planner' | 'profile';
 type AppState = 'loading' | 'signup' | 'tour' | 'app';
@@ -22,6 +24,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [appState, setAppState] = useState<AppState>('loading');
   const [tourStep, setTourStep] = useState(0);
+  const { language } = useApp ? useApp() : { language: 'en' };
 
   useEffect(() => {
     // Check if user has completed onboarding
@@ -48,25 +51,25 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomePage setActiveTab={setActiveTab} />;
+        return <HomePage setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'ai':
-        return <AIAssistant setActiveTab={setActiveTab} />;
+        return <AIAssistant setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'mood':
-        return <MoodTracker setActiveTab={setActiveTab} />;
+        return <MoodTracker setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'food':
-        return <FoodLogger setActiveTab={setActiveTab} />;
+        return <FoodLogger setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'analytics':
-        return <Analytics setActiveTab={setActiveTab} />;
+        return <Analytics setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'recipes':
-        return <Recipes setActiveTab={setActiveTab} />;
+        return <Recipes setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'social':
-        return <Social setActiveTab={setActiveTab} />;
+        return <Social setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'planner':
-        return <MealPlanner setActiveTab={setActiveTab} />;
+        return <MealPlanner setActiveTab={setActiveTab as (tab: string) => void} />;
       case 'profile':
-        return <Profile setActiveTab={setActiveTab} />;
+        return <Profile setActiveTab={setActiveTab as (tab: string) => void} />;
       default:
-        return <HomePage setActiveTab={setActiveTab} />;
+        return <HomePage setActiveTab={setActiveTab as (tab: string) => void} />;
     }
   };
 
@@ -99,9 +102,20 @@ function App() {
       <AppProvider>
         <div className="min-h-screen transition-colors duration-300">
           <div className="flex">
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-            <main className="flex-1 overflow-hidden">
-              {renderContent()}
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab as (tab: any) => void} />
+            <main className="flex-1 overflow-hidden relative">
+              <SwitchTransition>
+                <CSSTransition
+                  key={activeTab}
+                  timeout={300}
+                  classNames="fade"
+                  unmountOnExit
+                >
+                  <div>
+                    {renderContent()}
+                  </div>
+                </CSSTransition>
+              </SwitchTransition>
             </main>
           </div>
         </div>

@@ -49,6 +49,8 @@ interface AppContextType {
   toggleFavoriteRecipe: (recipeId: string) => void;
   currentMood: number;
   setCurrentMood: (mood: number) => void;
+  language: string;
+  setLanguage: (lang: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -92,6 +94,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   });
 
   const [currentMood, setCurrentMood] = useState<number>(7);
+  const [language, setLanguage] = useState(() => localStorage.getItem('chatbotLang') || 'en');
 
   useEffect(() => {
     if (user) {
@@ -110,6 +113,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem('moodbites_favorites', JSON.stringify(favoriteRecipes));
   }, [favoriteRecipes]);
+
+  useEffect(() => {
+    localStorage.setItem('chatbotLang', language);
+  }, [language]);
 
   const addMoodEntry = (entry: Omit<MoodEntry, 'id' | 'timestamp'>) => {
     const newEntry: MoodEntry = {
@@ -149,7 +156,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       favoriteRecipes,
       toggleFavoriteRecipe,
       currentMood,
-      setCurrentMood
+      setCurrentMood,
+      language,
+      setLanguage
     }}>
       {children}
     </AppContext.Provider>

@@ -14,8 +14,80 @@ interface AIAssistantProps {
   setActiveTab: (tab: string) => void;
 }
 
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'hi', label: 'हिन्दी' },
+  { code: 'es', label: 'Español' }
+];
+
+const TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: {
+    aiCoach: 'AI Nutrition Coach',
+    poweredBy: 'Powered by Gemini',
+    getInsights: 'Get personalized food and mood insights powered by advanced AI',
+    quickQuestions: 'Quick questions & commands:',
+    tryCommands: 'Try commands:',
+    clear: 'Clear',
+    online: 'Online • Ready to help',
+    thinking: 'AI is thinking...'
+  },
+  hi: {
+    aiCoach: 'एआई पोषण कोच',
+    poweredBy: 'Gemini द्वारा संचालित',
+    getInsights: 'एआई द्वारा संचालित व्यक्तिगत भोजन और मूड अंतर्दृष्टि प्राप्त करें',
+    quickQuestions: 'त्वरित प्रश्न और कमांड:',
+    tryCommands: 'कमांड आज़माएँ:',
+    clear: 'साफ़ करें',
+    online: 'ऑनलाइन • मदद के लिए तैयार',
+    thinking: 'एआई सोच रहा है...'
+  },
+  es: {
+    aiCoach: 'Entrenador de Nutrición AI',
+    poweredBy: 'Desarrollado por Gemini',
+    getInsights: 'Obtén información personalizada sobre alimentos y estado de ánimo impulsada por IA',
+    quickQuestions: 'Preguntas y comandos rápidos:',
+    tryCommands: 'Prueba comandos:',
+    clear: 'Limpiar',
+    online: 'En línea • Listo para ayudar',
+    thinking: 'La IA está pensando...'
+  }
+};
+
+function t(lang: string, key: string) {
+  return TRANSLATIONS[lang]?.[key] || TRANSLATIONS['en'][key] || key;
+}
+
+const FUN_FACTS: Record<string, string[]> = {
+  en: [
+    "Did you know? Bananas can help boost your mood!",
+    "Dark chocolate contains compounds that may improve brain function.",
+    "Drinking water can help you feel more energetic.",
+    "Avocados are rich in healthy fats for your brain.",
+    "A healthy gut can improve your mental health!"
+  ],
+  hi: [
+    "क्या आप जानते हैं? केले आपके मूड को बेहतर बना सकते हैं!",
+    "डार्क चॉकलेट में ऐसे तत्व होते हैं जो मस्तिष्क के लिए अच्छे हैं।",
+    "पानी पीना आपको अधिक ऊर्जावान बना सकता है।",
+    "एवोकाडो में दिमाग के लिए अच्छे वसा होते हैं।",
+    "स्वस्थ पेट मानसिक स्वास्थ्य को सुधार सकता है!"
+  ],
+  es: [
+    "¿Sabías que los plátanos pueden mejorar tu estado de ánimo?",
+    "El chocolate negro contiene compuestos que mejoran el cerebro.",
+    "Beber agua puede darte más energía.",
+    "Los aguacates son ricos en grasas saludables para el cerebro.",
+    "¡Un intestino sano mejora la salud mental!"
+  ]
+};
+
+function getRandomFact(lang: string) {
+  const facts = FUN_FACTS[lang] || FUN_FACTS['en'];
+  return facts[Math.floor(Math.random() * facts.length)];
+}
+
 export function AIAssistant({ setActiveTab }: AIAssistantProps) {
-  const { user, moodEntries, foodEntries, currentMood } = useApp();
+  const { user, moodEntries, foodEntries, currentMood, language, setLanguage } = useApp();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -28,6 +100,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [lastWasFallback, setLastWasFallback] = useState(false);
+  const [loadingFact, setLoadingFact] = useState(getRandomFact(language));
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -35,6 +108,12 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    if (isTyping) {
+      setLoadingFact(getRandomFact(language));
+    }
+  }, [isTyping, language]);
 
   const aiSuggestions = [
     "What should I eat to boost my energy?",
@@ -67,6 +146,12 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     setIsTyping(true);
     setLastWasFallback(false);
 
+    // Prepend system message for language
+    const systemPrompt = {
+      role: 'system',
+      content: `You are an AI assistant. Always reply in ${LANGUAGES.find(l => l.code === language)?.label || 'English'}.`
+    };
+
     // Handle special commands
     const special = await geminiService.handleSpecialCommand(inputMessage, {
       moodEntries,
@@ -95,13 +180,16 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
         content: msg.content
       }));
 
+      // Add system prompt for language
+      const fullHistory = [systemPrompt, ...conversationHistory];
+
       // Add current user message
-      conversationHistory.push({
+      fullHistory.push({
         role: 'user',
         content: inputMessage
       });
 
-      const aiResponse = await geminiService.generateResponse(conversationHistory);
+      const aiResponse = await geminiService.generateResponse(fullHistory);
       const isFallback = aiResponse.includes('I understand you') || aiResponse.includes('I apologize') || aiResponse.includes('nutrition and mood guidance');
       setLastWasFallback(isFallback);
       const aiMessage: Message = {
@@ -190,15 +278,29 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center">
-            <Bot className="w-10 h-10 mr-4 text-purple-600" />
-            AI Nutrition Coach
-            <span className="ml-3 text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">
-              Powered by Gemini
-            </span>
-          </h1>
-          <p className="text-gray-600 text-lg">Get personalized food and mood insights powered by advanced AI</p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center">
+              <Bot className="w-10 h-10 mr-4 text-purple-600" />
+              {t(language, 'aiCoach')}
+              <span className="ml-3 text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                {t(language, 'poweredBy')}
+              </span>
+            </h1>
+            <p className="text-gray-600 text-lg">{t(language, 'getInsights')}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">🌐</span>
+            <select
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
+              className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {LANGUAGES.map(lang => (
+                <option key={lang.code} value={lang.code}>{lang.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* User Context Summary */}
@@ -294,7 +396,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
               <div>
                 <h3 className="text-lg font-bold">AI Nutrition Assistant</h3>
                 <p className="text-purple-100 text-sm">
-                  {isTyping ? 'AI is thinking...' : 'Online • Ready to help'}
+                  {isTyping ? t(language, 'thinking') : t(language, 'online')}
                 </p>
               </div>
             </div>
@@ -337,9 +439,17 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 text-gray-800 px-4 py-3 rounded-2xl flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                  <span className="text-sm">AI is analyzing and generating response...</span>
+                <div className="bg-gradient-to-r from-yellow-100 to-orange-100 text-gray-800 px-4 py-4 rounded-2xl flex items-center gap-4 shadow-md animate-pulse">
+                  <div className="relative flex items-center justify-center">
+                    <span className="text-3xl animate-bounce">🍌</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm mb-1 text-orange-700">{loadingFact}</div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
+                      <span>{t(language, 'thinking')}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -348,7 +458,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
 
           {/* Quick Suggestions */}
           <div className="px-6 py-4 border-t border-gray-100">
-            <p className="text-sm text-gray-600 mb-3">Quick questions & commands:</p>
+            <p className="text-sm text-gray-600 mb-3">{t(language, 'quickQuestions')}</p>
             <div className="flex flex-wrap gap-2">
               {aiSuggestions.map((suggestion, index) => (
                 <button
@@ -382,7 +492,7 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
           {/* Input */}
           <div className="p-6 border-t border-gray-100 flex flex-col gap-2">
             <div className="mb-2 text-xs text-gray-500">
-              <span className="font-semibold">Try commands:</span> <span className="font-mono">/recipe</span>, <span className="font-mono">/summary</span>, <span className="font-mono">/fact</span>, <span className="font-mono">/motivate</span>, <span className="font-mono">/remember</span>, <span className="font-mono">/preferences</span>
+              <span className="font-semibold">{t(language, 'tryCommands')}</span> <span className="font-mono">/recipe</span>, <span className="font-mono">/summary</span>, <span className="font-mono">/fact</span>, <span className="font-mono">/motivate</span>, <span className="font-mono">/remember</span>, <span className="font-mono">/preferences</span>
             </div>
             <div className="flex space-x-4">
               <input
@@ -409,9 +519,9 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
                 onClick={handleClearChat}
                 className="px-4 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-semibold"
                 disabled={isTyping}
-                title="Clear chat"
+                title={t(language, 'clear')}
               >
-                Clear
+                {t(language, 'clear')}
               </button>
             </div>
           </div>

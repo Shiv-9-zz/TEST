@@ -23,9 +23,23 @@ interface HomePageProps {
   setActiveTab: (tab: string) => void;
 }
 
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'hi', label: 'हिन्दी' },
+  { code: 'es', label: 'Español' }
+];
+
+const TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: { welcome: 'Welcome to', featured: 'Featured Recipes', stats: 'Today\'s Stats', progress: 'Today\'s Progress' },
+  hi: { welcome: 'स्वागत है', featured: 'विशेष व्यंजन', stats: 'आज के आँकड़े', progress: 'आज की प्रगति' },
+  es: { welcome: 'Bienvenido a', featured: 'Recetas Destacadas', stats: 'Estadísticas de Hoy', progress: 'Progreso de Hoy' }
+};
+
+function t(lang: string, key: string) { return TRANSLATIONS[lang]?.[key] || TRANSLATIONS['en'][key] || key; }
+
 export function HomePage({ setActiveTab }: HomePageProps) {
   const { theme } = useTheme();
-  const { user, moodEntries, foodEntries } = useApp();
+  const { user, moodEntries, foodEntries, language, setLanguage } = useApp();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [featuredVideos, setFeaturedVideos] = useState<YouTubeVideo[]>([]);
   const [isLoadingVideos, setIsLoadingVideos] = useState(false);
@@ -156,7 +170,7 @@ export function HomePage({ setActiveTab }: HomePageProps) {
                   <span className="text-2xl font-extrabold tracking-tight drop-shadow-lg">{greeting.text}, {user?.name || 'User'}!</span>
                 </div>
                 <h1 className="text-6xl font-extrabold mb-6 text-gray-800 dark:text-white drop-shadow-lg">
-                  Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 dark:from-blue-400 dark:to-purple-600">
+                  {t(language, 'welcome')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 dark:from-blue-400 dark:to-purple-600">
                     MoodBites
                   </span>
                 </h1>
@@ -178,11 +192,12 @@ export function HomePage({ setActiveTab }: HomePageProps) {
                 </div>
               </div>
               <Notifications />
+              <div className="flex items-center gap-2"><span className="text-sm text-gray-500">🌐</span><select value={language} onChange={e => setLanguage(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">{LANGUAGES.map(lang => (<option key={lang.code} value={lang.code}>{lang.label}</option>))}</select></div>
             </div>
             {/* Progress Rings */}
             <div className="rounded-3xl p-8 shadow-2xl border mb-12 bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
               <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
-                Today's Progress
+                {t(language, 'progress')}
               </h2>
               <ProgressRings />
             </div>
@@ -272,7 +287,7 @@ export function HomePage({ setActiveTab }: HomePageProps) {
             <div className="rounded-3xl p-8 shadow-2xl border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
               <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
                 <Coffee className="w-8 h-8 mr-4 text-orange-600 dark:text-orange-400 drop-shadow-lg" />
-                Recipes for Your Mood
+                {t(language, 'featured')}
               </h2>
               <div className="space-y-6">
                 {featuredRecipes.map((recipe, index) => (
