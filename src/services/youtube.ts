@@ -49,9 +49,9 @@ class YouTubeService {
   private baseURL = 'https://www.googleapis.com/youtube/v3';
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_YOUTUBE_API_KEY || '';
+    this.apiKey = 'AIzaSyCc3VMrRTQfhQ3n8Z2xapWI9iDUlBtIuCc';
     if (!this.apiKey) {
-      console.warn('YouTube API key not found. Please add VITE_YOUTUBE_API_KEY to your environment variables.');
+      console.warn('YouTube API key not found.');
     }
   }
 

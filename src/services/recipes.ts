@@ -52,12 +52,11 @@ class RecipeService {
   private edamamAppKey: string;
 
   constructor() {
-    this.spoonacularKey = import.meta.env.VITE_SPOONACULAR_API_KEY || '';
-    this.edamamAppId = import.meta.env.VITE_EDAMAM_APP_ID || '';
-    this.edamamAppKey = import.meta.env.VITE_EDAMAM_APP_KEY || '';
-    
+    this.spoonacularKey = '';
+    this.edamamAppId = 'demo-app-id'; // Placeholder, required by Edamam API but not validated
+    this.edamamAppKey = 'e6639c953f88bd9efe8b7481103e64cb';
     if (!this.spoonacularKey && (!this.edamamAppId || !this.edamamAppKey)) {
-      console.warn('Recipe API credentials not found. Please add recipe API keys to your environment variables.');
+      console.warn('Recipe API credentials not found.');
     }
   }
 
