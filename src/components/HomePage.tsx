@@ -44,6 +44,12 @@ export function HomePage({ setActiveTab }: HomePageProps) {
     try {
       const videos = await youtubeService.searchMoodCookingVideos('healthy', 3);
       setFeaturedVideos(videos);
+      
+      // Check if we only got fallback videos (with url = '#')
+      const allFallback = videos.every(video => video.url === '#');
+      if (allFallback) {
+        console.warn('Only fallback YouTube videos were loaded');
+      }
     } catch (error) {
       console.error('Failed to load featured videos:', error);
     } finally {
@@ -297,51 +303,58 @@ export function HomePage({ setActiveTab }: HomePageProps) {
               </div>
             </div>
           </div>
-          {/* Featured Cooking Videos */}
-          <div className="rounded-3xl p-8 shadow-2xl mb-12 border bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
-            <h2 className="text-3xl font-extrabold mb-8 flex items-center text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
-              <Play className="w-8 h-8 mr-4 text-red-600 drop-shadow-lg" />
-              Featured Cooking Videos
-              <span className="ml-4 text-base bg-red-100 text-red-700 px-4 py-2 rounded-full shadow-sm">
-                YouTube
-              </span>
-            </h2>
+          {/* Featured Videos */}
+          <div className="rounded-3xl p-8 shadow-2xl border mb-12 bg-white/80 border-gray-100 dark:bg-gray-800/90 dark:border-gray-700 backdrop-blur-md">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight drop-shadow-lg">
+                Featured Videos
+              </h2>
+              {featuredVideos.every(video => video.url === '#') && (
+                <div className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                  YouTube API unavailable - Showing sample videos
+                </div>
+              )}
+            </div>
             {isLoadingVideos ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600"></div>
-                <span className="ml-4 text-lg text-gray-600 dark:text-gray-400 font-medium opacity-80">
-                  Loading videos...
-                </span>
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {featuredVideos.map((video, index) => (
-                  <div 
-                    key={index} 
-                    className="group cursor-pointer rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur-md"
+                  <div
+                    key={video.id || index}
+                    className="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 bg-white dark:bg-gray-700 cursor-pointer"
                     onClick={() => openVideo(video)}
                   >
-                    <div className="relative overflow-hidden rounded-2xl mb-4">
+                    <div className="relative">
                       <img 
                         src={video.thumbnail} 
-                        alt={video.title}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 shadow-md"
+                        alt={video.title} 
+                        className="w-full h-48 object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                          <Play className="w-8 h-8 text-white ml-1" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                        <div className="p-4">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Play className="w-6 h-6 text-white" />
+                            <span className="text-white font-medium">{video.duration}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="absolute bottom-3 right-3 bg-black/80 text-white px-3 py-2 rounded text-base shadow-md">
-                        {video.duration}
-                      </div>
                     </div>
-                    <h3 className="font-bold line-clamp-2 mb-2 group-hover:text-red-600 transition-colors text-lg text-gray-800 dark:text-white drop-shadow-lg">
-                      {video.title}
-                    </h3>
-                    <p className="text-base text-gray-600 dark:text-gray-400 font-medium opacity-80">
-                      {video.channelTitle}
-                    </p>
+                    <div className="p-4">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2 line-clamp-2">{video.title}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{video.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{video.channelTitle}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{video.viewCount}</span>
+                      </div>
+                      {video.url === '#' && (
+                        <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400 italic">
+                          Sample video - Click to see real content
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

@@ -43,6 +43,15 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     "Suggest a recipe for my current mood"
   ];
 
+  const commandSuggestions = [
+    { command: "/recipe", display: "Recipe", example: "tofu, broccoli, vegan" },
+    { command: "/summary", display: "Summary" },
+    { command: "/fact", display: "Nutrition Fact" },
+    { command: "/motivate", display: "Motivation" },
+    { command: "/remember", display: "Remember", example: "I am vegetarian" },
+    { command: "/preferences", display: "Preferences" }
+  ];
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
 
@@ -147,17 +156,6 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     }
   };
 
-  // Add new suggestions for new features
-  const extendedSuggestions = [
-    ...aiSuggestions,
-    "/recipe tofu, broccoli, vegan",
-    "/summary",
-    "/fact",
-    "/motivate",
-    "/remember I am vegetarian",
-    "/preferences"
-  ];
-
   // Keyboard accessibility for quick suggestions
   const suggestionButtonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const handleSuggestionKeyDown = (e: React.KeyboardEvent, idx: number) => {
@@ -166,7 +164,13 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
     } else if (e.key === 'ArrowLeft') {
       suggestionButtonsRef.current[idx - 1]?.focus();
     } else if (e.key === 'Enter') {
-      handleSuggestionClick(extendedSuggestions[idx]);
+      if (idx < aiSuggestions.length) {
+        handleSuggestionClick(aiSuggestions[idx]);
+      } else {
+        const cmdIdx = idx - aiSuggestions.length;
+        const cmd = commandSuggestions[cmdIdx];
+        handleSuggestionClick(cmd.example ? `${cmd.command} ${cmd.example}` : cmd.command);
+      }
     }
   };
 
@@ -346,9 +350,9 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
           <div className="px-6 py-4 border-t border-gray-100">
             <p className="text-sm text-gray-600 mb-3">Quick questions & commands:</p>
             <div className="flex flex-wrap gap-2">
-              {extendedSuggestions.map((suggestion, index) => (
+              {aiSuggestions.map((suggestion, index) => (
                 <button
-                  key={index}
+                  key={`suggestion-${index}`}
                   ref={el => suggestionButtonsRef.current[index] = el}
                   onClick={() => handleSuggestionClick(suggestion)}
                   onKeyDown={e => handleSuggestionKeyDown(e, index)}
@@ -356,6 +360,20 @@ export function AIAssistant({ setActiveTab }: AIAssistantProps) {
                   disabled={isTyping}
                 >
                   {suggestion}
+                </button>
+              ))}
+              
+              {commandSuggestions.map((cmd, index) => (
+                <button
+                  key={`command-${index}`}
+                  ref={el => suggestionButtonsRef.current[index + aiSuggestions.length] = el}
+                  onClick={() => handleSuggestionClick(cmd.example ? `${cmd.command} ${cmd.example}` : cmd.command)}
+                  onKeyDown={e => handleSuggestionKeyDown(e, index + aiSuggestions.length)}
+                  className="px-3 py-2 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition-colors flex items-center gap-1"
+                  disabled={isTyping}
+                >
+                  <span className="font-semibold">{cmd.display}</span>
+                  {cmd.example && <span className="text-blue-500 text-xs">({cmd.example})</span>}
                 </button>
               ))}
             </div>

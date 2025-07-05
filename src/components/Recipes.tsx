@@ -115,6 +115,12 @@ export function Recipes({ setActiveTab }: RecipesProps) {
         fetchedVideos = await youtubeService.searchMoodCookingVideos(selectedMood, 8);
       }
       setVideos(fetchedVideos);
+      
+      // Check if we only got fallback videos
+      const allFallback = fetchedVideos.every(video => video.url === '#');
+      if (allFallback) {
+        console.warn('Only fallback YouTube videos were loaded');
+      }
     } catch (error) {
       console.error('Failed to load videos:', error);
     } finally {
@@ -349,72 +355,80 @@ export function Recipes({ setActiveTab }: RecipesProps) {
         </>
       ) : (
         <>
-          {/* Loading State for Videos */}
-          {isLoadingVideos && (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-red-600 mr-3" />
-              <span className="text-lg text-gray-600">Loading cooking videos...</span>
+          {/* Video Filters */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-2">
+              {moodFilters.map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setSelectedMood(filter.id)}
+                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 ${
+                    selectedMood === filter.id
+                      ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <span>{filter.emoji}</span>
+                  <span>{filter.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Video Status */}
+          {videos.every(video => video.url === '#') && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="text-yellow-500 text-xl">⚠️</div>
+                <div>
+                  <h3 className="font-semibold text-yellow-800">YouTube API Unavailable</h3>
+                  <p className="text-yellow-700 text-sm">Showing sample videos. API key may be invalid or rate-limited.</p>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Video Grid */}
-          {!isLoadingVideos && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Videos Grid */}
+          {isLoadingVideos ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {videos.map((video) => (
-                <div 
-                  key={video.id} 
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
+                <div
+                  key={video.id}
                   onClick={() => openVideo(video)}
+                  className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
                 >
-                  <div className="relative overflow-hidden">
-                    <img 
-                      src={video.thumbnail} 
+                  <div className="relative">
+                    <img
+                      src={video.thumbnail}
                       alt={video.title}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-48 object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                      <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="w-8 h-8 text-white ml-1" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                      <div className="p-4 w-full flex justify-between items-center">
+                        <div className="flex items-center space-x-2">
+                          <Play className="w-5 h-5 text-white" />
+                          <span className="text-white text-sm">{video.duration}</span>
+                        </div>
+                        <span className="text-white text-xs">{video.viewCount}</span>
                       </div>
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-sm">
-                      {video.duration}
                     </div>
                   </div>
-                  
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-red-600 transition-colors">
-                      {video.title}
-                    </h3>
-                    
-                    <p className="text-sm text-gray-600 mb-2">{video.channelTitle}</p>
-                    
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <Eye className="w-3 h-3" />
-                        <span>{video.viewCount}</span>
-                      </div>
-                      <span>{new Date(video.publishedAt).toLocaleDateString()}</span>
-                    </div>
-                    
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <button className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium py-2 px-4 rounded-xl hover:shadow-md transition-all duration-200 flex items-center justify-center space-x-2">
-                        <Play className="w-4 h-4" />
-                        <span>Watch on YouTube</span>
-                      </button>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-bold text-gray-800 mb-2 line-clamp-2">{video.title}</h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2 flex-1">{video.description}</p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-xs text-gray-500">{video.channelTitle}</span>
+                      {video.url === '#' && (
+                        <span className="text-xs text-yellow-600 italic">Sample video</span>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
-            </div>
-          )}
-
-          {/* Empty State for Videos */}
-          {!isLoadingVideos && videos.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📺</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No videos found</h3>
-              <p className="text-gray-600">Try adjusting your filters or check your YouTube API configuration.</p>
             </div>
           )}
         </>
