@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html.sunny {
+  background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
+  color: #333;
+}
+
+html.rainy {
+  background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+  color: #f0f4ff;
+}
+
+html.cloudy {
+  background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
+  color: #222;
+}
+
+html.night {
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  color: #e0e0e0;
+}
+
+html.dark {
+  background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+  color: #e0e0e0;
+}

@@ -14,7 +14,6 @@ import { SignupPage } from './components/SignupPage';
 import { GuidedTour } from './components/GuidedTour';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider, useApp } from './contexts/AppContext';
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import './TabTransition.css';
 
 type ActiveTab = 'home' | 'ai' | 'mood' | 'food' | 'analytics' | 'recipes' | 'social' | 'planner' | 'profile';
@@ -29,12 +28,9 @@ function App() {
   useEffect(() => {
     // Check if user has completed onboarding
     const hasCompletedOnboarding = localStorage.getItem('moodbites_onboarding_complete');
-    
     if (hasCompletedOnboarding) {
-      // Skip to app if user has already completed onboarding
       setTimeout(() => setAppState('app'), 3000);
     } else {
-      // Show full onboarding flow
       setTimeout(() => setAppState('signup'), 3000);
     }
   }, []);
@@ -103,19 +99,8 @@ function App() {
         <div className="min-h-screen transition-colors duration-300">
           <div className="flex">
             <Sidebar activeTab={activeTab} setActiveTab={setActiveTab as (tab: any) => void} />
-            <main className="flex-1 overflow-hidden relative">
-              <SwitchTransition>
-                <CSSTransition
-                  key={activeTab}
-                  timeout={300}
-                  classNames="fade"
-                  unmountOnExit
-                >
-                  <div>
-                    {renderContent()}
-                  </div>
-                </CSSTransition>
-              </SwitchTransition>
+            <main className="flex-1 overflow-hidden relative transition-opacity duration-300">
+              {renderContent()}
             </main>
           </div>
         </div>
