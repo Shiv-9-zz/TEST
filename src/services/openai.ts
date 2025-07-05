@@ -11,62 +11,64 @@ interface OpenAIResponse {
   }[];
 }
 
-class OpenAIService {
+interface GeminiMessage {
+  role: 'user' | 'model';
+  parts: { text: string }[];
+}
+
+class GeminiService {
   private apiKey: string;
-  private baseURL = 'https://api.openai.com/v1';
+  private baseURL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
   private userPreferences: string[] = [];
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_OPENAI_API_KEY || '';
+    this.apiKey = 'AIzaSyCdjaNTk8-r89hDp-9GZDxvmf4OUVbZT2I';
     if (!this.apiKey) {
-      console.warn('OpenAI API key not found. Please add VITE_OPENAI_API_KEY to your environment variables.');
+      console.warn('Gemini API key not found.');
     }
   }
 
-  async generateResponse(messages: OpenAIMessage[]): Promise<string> {
+  async generateResponse(messages: { role: string; content: string }[]): Promise<string> {
     if (!this.apiKey) {
       return this.getFallbackResponse(messages[messages.length - 1].content);
     }
-
+    // Convert to Gemini format
+    let geminiMessages: GeminiMessage[] = messages.map((msg) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }],
+    }));
+    // If first message is a system prompt, prepend as user message
+    if (messages[0]?.role === 'system') {
+      geminiMessages = [
+        { role: 'user', parts: [{ text: messages[0].content }] },
+        ...geminiMessages.slice(1)
+      ];
+    }
     try {
-      const response = await fetch(`${this.baseURL}/chat/completions`, {
+      const response = await fetch(`${this.baseURL}?key=${this.apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: `You are a nutrition and mood expert AI assistant for MoodBites app. 
-              You help users understand the connection between food and emotions. 
-              Provide personalized, science-based advice about nutrition, mood-boosting foods, 
-              and healthy eating habits. Keep responses conversational, encouraging, and practical.
-              Use emojis appropriately and format responses with bullet points when listing items.`
-            },
-            ...messages
-          ],
-          max_tokens: 500,
-          temperature: 0.7,
+          contents: geminiMessages,
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 500,
+          },
         }),
       });
-
       if (!response.ok) {
-        if (response.status === 429) {
-          return "⏰ I'm currently experiencing high demand and need a moment to catch up. Please try again in a few seconds. In the meantime, I can still help with general nutrition advice using my built-in knowledge!";
-        }
-        throw new Error(`OpenAI API error: ${response.status}`);
+        throw new Error(`Gemini API error: ${response.status}`);
       }
-
-      const data: OpenAIResponse = await response.json();
-      return data.choices[0]?.message?.content || 'I apologize, but I couldn\'t generate a response right now. Please try again.';
+      const data = await response.json();
+      // Gemini returns candidates[0].content.parts[0].text
+      return (
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        'I apologize, but I could not generate a response right now. Please try again.'
+      );
     } catch (error) {
-      console.error('OpenAI API error:', error);
-      if (error instanceof Error && error.message.includes('429')) {
-        return "⏰ I'm currently experiencing high demand and need a moment to catch up. Please try again in a few seconds. In the meantime, I can still help with general nutrition advice using my built-in knowledge!";
-      }
+      console.error('Gemini API error:', error);
       return this.getFallbackResponse(messages[messages.length - 1].content);
     }
   }
@@ -184,4 +186,4 @@ class OpenAIService {
   }
 }
 
-export const openAIService = new OpenAIService();
+export const openAIService = new GeminiService();
